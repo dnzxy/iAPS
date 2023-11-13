@@ -49,7 +49,7 @@ struct FreeAPSSettings: JSON, Equatable {
     var useCalc: Bool = false
     var fattyMeals: Bool = false
     var fattyMealFactor: Decimal = 0.7
-    var watchPresetButtonSelection: AwPresetButtonSelection = .tempTarget
+    var watchPresetButtonSelection: AwPresetButtonSelection = .profileOverride
 }
 
 extension FreeAPSSettings: Decodable {

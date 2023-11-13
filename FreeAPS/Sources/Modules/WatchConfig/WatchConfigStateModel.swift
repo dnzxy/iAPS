@@ -46,7 +46,7 @@ extension WatchConfig {
         @Published var devices: [IQDevice] = []
         @Published var selectedAwConfig: AwConfig = .HR
         @Published var displayFatAndProteinOnWatch = false
-        @Published var selectedAwPresetButton: AwPresetButtonSelection = .tempTarget
+        @Published var selectedAwPresetButton: AwPresetButtonSelection = .profileOverride
 
         private(set) var preferences = Preferences()
 

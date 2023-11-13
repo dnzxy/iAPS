@@ -65,7 +65,7 @@ class WatchStateModel: NSObject, ObservableObject {
     @Published var isf: Decimal?
     @Published var override: String?
     @Published var profileOverridePresets: [ProfileOverrideWatchPreset] = []
-    @Published var watchPresetButtonSelection: AwPresetButtonSelection = .tempTarget
+    @Published var watchPresetButtonSelection: AwPresetButtonSelection = .profileOverride
 
     private var lifetime = Set<AnyCancellable>()
     private var confirmationTimeout: AnyCancellable?

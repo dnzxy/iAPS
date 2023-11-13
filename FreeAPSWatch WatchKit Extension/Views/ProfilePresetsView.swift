@@ -88,3 +88,31 @@ struct ProfilePresetsView: View {
         }
     }
 }
+
+struct ProfilePresetsView_Previews: PreviewProvider {
+    static var previews: some View {
+        let model = WatchStateModel()
+        model.profileOverridePresets = [
+            ProfileOverrideWatchPreset(
+                id: UUID().uuidString,
+                name: "Test Profile",
+                date: Date(),
+                duration: 60,
+                start: nil,
+                end: nil,
+                percentage: 100,
+                target: 100,
+                smbMinutes: 90,
+                uamMinutes: 90,
+                advancedSettings: false,
+                cr: false,
+                indefinite: false,
+                isf: false,
+                isfAndCr: false,
+                smbIsAlwaysOff: false,
+                smbIsOff: false
+            )
+        ]
+        return ProfilePresetsView().environmentObject(model)
+    }
+}
