@@ -112,6 +112,30 @@ final class BaseWatchManager: NSObject, WatchManager, Injectable {
                         until: untilDate
                     )
                 }
+
+            self.state.profileOverridePresets = self.coreDataStorage.fetchProfileOverridePresets()
+                .map { preset in
+                    ProfileOverrideWatchPreset(
+                        id: preset.id ?? "",
+                        name: preset.name ?? "",
+                        date: preset.date ?? Date(),
+                        duration: preset.duration as Decimal?,
+                        start: preset.start as Decimal?,
+                        end: preset.end as Decimal?,
+                        percentage: preset.percentage,
+                        target: preset.target as Decimal?,
+                        smbMinutes: preset.smbMinutes as Decimal?,
+                        uamMinutes: preset.uamMinutes as Decimal?,
+                        advancedSettings: preset.advancedSettings,
+                        cr: preset.cr,
+                        indefinite: preset.indefinite,
+                        isf: preset.isf,
+                        isfAndCr: preset.isfAndCr,
+                        smbIsAlwaysOff: preset.smbIsAlwaysOff,
+                        smbIsOff: preset.smbIsOff
+                    )
+                }
+
             self.state.bolusAfterCarbs = !self.settingsManager.settings.skipBolusScreenAfterCarbs
             self.state.displayOnWatch = self.settingsManager.settings.displayOnWatch
             self.state.displayFatAndProteinOnWatch = self.settingsManager.settings.displayFatAndProteinOnWatch
@@ -375,6 +399,32 @@ extension BaseWatchManager: WCSessionDelegate {
                 replyHandler(["confirmation": true])
                 return
             }
+        }
+
+        if let profileOverridePresetId = message["profileOverridePreset"] as? String {
+            print("We're here now! Profile Preset Id: \(profileOverridePresetId)")
+
+            // TODO: implement profile enactment (port over from iPhone)
+
+//            if var preset = tempTargetsStorage.presets().first(where: { $0.id == profileOverridePresetId }) {
+//                preset.createdAt = Date()
+//                tempTargetsStorage.storeTempTargets([preset])
+//                replyHandler(["confirmation": true])
+//                return
+//            } else if profileOverridePresetId == "cancel" {
+//                let entry = TempTarget(
+//                    name: TempTarget.cancel,
+//                    createdAt: Date(),
+//                    targetTop: 0,
+//                    targetBottom: 0,
+//                    duration: 0,
+//                    enteredBy: TempTarget.manual,
+//                    reason: TempTarget.cancel
+//                )
+//                tempTargetsStorage.storeTempTargets([entry])
+//                replyHandler(["confirmation": true])
+//                return
+//            }
         }
 
         if let bolus = message["bolus"] as? Double, bolus > 0 {

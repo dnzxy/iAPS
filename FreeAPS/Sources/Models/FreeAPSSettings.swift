@@ -49,6 +49,7 @@ struct FreeAPSSettings: JSON, Equatable {
     var useCalc: Bool = false
     var fattyMeals: Bool = false
     var fattyMealFactor: Decimal = 0.7
+    var watchPresetButtonSelection: AwPresetButtonSelection = .tempTarget
 }
 
 extension FreeAPSSettings: Decodable {
@@ -105,6 +106,13 @@ extension FreeAPSSettings: Decodable {
 
         if let displayOnWatch = try? container.decode(AwConfig.self, forKey: .displayOnWatch) {
             settings.displayOnWatch = displayOnWatch
+        }
+
+        if let watchPresetButtonSelection = try? container.decode(
+            AwPresetButtonSelection.self,
+            forKey: .watchPresetButtonSelection
+        ) {
+            settings.watchPresetButtonSelection = watchPresetButtonSelection
         }
 
         if let cgm = try? container.decode(CGMType.self, forKey: .cgm) {

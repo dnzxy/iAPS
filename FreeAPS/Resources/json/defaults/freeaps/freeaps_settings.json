@@ -32,6 +32,7 @@
   "useAppleHealth" : false,
   "smoothGlucose" : false,
   "displayOnWatch" : "BGTarget",
+  "watchPresetButtonSelection" : "tempTarget",
   "overrideHbA1cUnit" : false,
   "high" : 145,
   "low" : 70,

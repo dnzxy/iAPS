@@ -31,4 +31,13 @@ final class CoreDataStorage {
         }
         return overrideArray
     }
+
+    func fetchProfileOverridePresets() -> [OverridePresets] {
+        var profileOverridePresets = [OverridePresets]()
+        coredataContext.performAndWait {
+            let overridePresets = OverridePresets.fetchRequest() as NSFetchRequest<OverridePresets>
+            try? profileOverridePresets = self.coredataContext.fetch(overridePresets)
+        }
+        return profileOverridePresets
+    }
 }

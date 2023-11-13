@@ -17,6 +17,15 @@ extension WatchConfig {
                             Text(v.displayName).tag(v)
                         }
                     }
+
+                    Picker(
+                        selection: $state.selectedAwPresetButton,
+                        label: Text("Preset Button Display")
+                    ) {
+                        ForEach(AwPresetButtonSelection.allCases) { selection in
+                            Text(selection.displayName).tag(selection)
+                        }
+                    }
                 }
 
                 Toggle("Display Protein & Fat", isOn: $state.displayFatAndProteinOnWatch)

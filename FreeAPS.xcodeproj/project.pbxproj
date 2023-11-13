@@ -317,6 +317,7 @@
 		BF1667ADE69E4B5B111CECAE /* ManualTempBasalProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680C4420C9A345D46D90D06C /* ManualTempBasalProvider.swift */; };
 		C967DACD3B1E638F8B43BE06 /* ManualTempBasalStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCFE0781F9074C2917890E8 /* ManualTempBasalStateModel.swift */; };
 		CA370FC152BC98B3D1832968 /* BasalProfileEditorRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8BCB0C37DEB5EC377B9612 /* BasalProfileEditorRootView.swift */; };
+		CC289E2B2B008B1C00537594 /* ProfilePresetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC289E2A2B008B1C00537594 /* ProfilePresetsView.swift */; };
 		CC6C406E2ACDD69E009B8058 /* RawFetchedProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6C406D2ACDD69E009B8058 /* RawFetchedProfile.swift */; };
 		CD78BB94E43B249D60CC1A1B /* NotificationsConfigRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22963BD06A9C83959D4914E4 /* NotificationsConfigRootView.swift */; };
 		CE1856F52ADC4858007E39C7 /* AddCarbPresetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1856F42ADC4858007E39C7 /* AddCarbPresetIntent.swift */; };
@@ -849,6 +850,7 @@
 		C19984D62EFC0035A9E9644D /* BolusProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BolusProvider.swift; sourceTree = "<group>"; };
 		C377490C77661D75E8C50649 /* ManualTempBasalRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualTempBasalRootView.swift; sourceTree = "<group>"; };
 		C8D1A7CA8C10C4403D4BBFA7 /* BolusDataFlow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BolusDataFlow.swift; sourceTree = "<group>"; };
+		CC289E2A2B008B1C00537594 /* ProfilePresetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresetsView.swift; sourceTree = "<group>"; };
 		CC6C406D2ACDD69E009B8058 /* RawFetchedProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawFetchedProfile.swift; sourceTree = "<group>"; };
 		CE1856F42ADC4858007E39C7 /* AddCarbPresetIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCarbPresetIntent.swift; sourceTree = "<group>"; };
 		CE1856F62ADC4869007E39C7 /* CarbPresetIntentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbPresetIntentRequest.swift; sourceTree = "<group>"; };
@@ -1834,6 +1836,7 @@
 				38E8757A2757B1C300975559 /* TempTargetsView.swift */,
 				38E8757C2757C45D00975559 /* BolusView.swift */,
 				38E8757F27595DC500975559 /* BolusConfirmationView.swift */,
+				CC289E2A2B008B1C00537594 /* ProfilePresetsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2931,6 +2934,7 @@
 				38E8754C2755548F00975559 /* WatchStateModel.swift in Sources */,
 				38E8754A275550BB00975559 /* CarbsView.swift in Sources */,
 				38E8752C27554D5700975559 /* MainView.swift in Sources */,
+				CC289E2B2B008B1C00537594 /* ProfilePresetsView.swift in Sources */,
 				38E8755127555D0500975559 /* DataFlow.swift in Sources */,
 				38E8753227554D5700975559 /* ComplicationController.swift in Sources */,
 				38E8752A27554D5700975559 /* FreeAPSApp.swift in Sources */,

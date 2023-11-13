@@ -261,20 +261,40 @@ struct MainView: View {
                     .foregroundColor(.loopYellow)
             }
 
-            NavigationLink(isActive: $state.isTempTargetViewActive) {
-                TempTargetsView()
-                    .environmentObject(state)
-            } label: {
-                VStack {
-                    Image("target", bundle: nil)
-                        .renderingMode(.template)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(.loopGreen)
-                    if let until = state.tempTargets.compactMap(\.until).first, until > Date() {
-                        Text(until, style: .timer)
-                            .scaledToFill()
-                            .font(.system(size: 8))
+            switch state.watchPresetButtonSelection {
+            // TODO: implement some form of active indicator for temp target and profile when active but non-preset (only enabled on phone, no preset = no timer)
+            case .tempTarget:
+                NavigationLink(isActive: $state.isTempTargetViewActive) {
+                    TempTargetsView()
+                        .environmentObject(state)
+                } label: {
+                    VStack {
+                        Image("target", bundle: nil)
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(.loopGreen)
+                        if let until = state.tempTargets.compactMap(\.until).first, until > Date() {
+                            Text(until, style: .timer)
+                                .scaledToFill()
+                                .font(.system(size: 8))
+                        }
+                    }
+                }
+
+            case .profileOverride:
+                NavigationLink(isActive: $state.isProfileOverridePresetsViewActive) {
+                    ProfilePresetsView()
+                        .environmentObject(state)
+                } label: {
+                    VStack {
+                        Image(systemName: "person.3.sequence.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(Color.cyan, Color.green, Color.purple)
+
+                        // TODO: implement timer for profile preset if NOT enabled indefinitely
                     }
                 }
             }

@@ -25,12 +25,28 @@ enum AwConfig: String, JSON, CaseIterable, Identifiable, Codable {
     }
 }
 
+enum AwPresetButtonSelection: String, JSON, CaseIterable, Identifiable, Codable {
+    var id: String { rawValue }
+    case tempTarget
+    case profileOverride
+
+    var displayName: String {
+        switch self {
+        case .tempTarget:
+            return NSLocalizedString("Temp Targets", comment: "")
+        case .profileOverride:
+            return NSLocalizedString("Profiles", comment: "")
+        }
+    }
+}
+
 extension WatchConfig {
     final class StateModel: BaseStateModel<Provider> {
         @Injected() private var garmin: GarminManager!
         @Published var devices: [IQDevice] = []
         @Published var selectedAwConfig: AwConfig = .HR
         @Published var displayFatAndProteinOnWatch = false
+        @Published var selectedAwPresetButton: AwPresetButtonSelection = .tempTarget
 
         private(set) var preferences = Preferences()
 
@@ -48,6 +64,7 @@ extension WatchConfig {
                     self?.settingsManager.settings.displayHR = false
                 }
             }
+            subscribeSetting(\.watchPresetButtonSelection, on: $selectedAwPresetButton) { selectedAwPresetButton = $0 }
 
             devices = garmin.devices
         }

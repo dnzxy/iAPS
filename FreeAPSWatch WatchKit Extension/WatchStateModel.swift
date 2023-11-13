@@ -12,6 +12,12 @@ enum AwConfig: String, CaseIterable, Identifiable, Codable {
     case override
 }
 
+enum AwPresetButtonSelection: String, CaseIterable, Identifiable, Codable {
+    var id: String { rawValue }
+    case tempTarget
+    case profileOverride
+}
+
 class WatchStateModel: NSObject, ObservableObject {
     var session: WCSession
 
@@ -32,6 +38,7 @@ class WatchStateModel: NSObject, ObservableObject {
     @Published var isCarbsViewActive = false
     @Published var isTempTargetViewActive = false
     @Published var isBolusViewActive = false
+    @Published var isProfileOverridePresetsViewActive = false
     @Published var displayOnWatch: AwConfig = .BGTarget
     @Published var displayFatAndProteinOnWatch = false
     @Published var useNewCalc = false
@@ -57,6 +64,8 @@ class WatchStateModel: NSObject, ObservableObject {
     @Published var pendingBolus: Double?
     @Published var isf: Decimal?
     @Published var override: String?
+    @Published var profileOverridePresets: [ProfileOverrideWatchPreset] = []
+    @Published var watchPresetButtonSelection: AwPresetButtonSelection = .tempTarget
 
     private var lifetime = Set<AnyCancellable>()
     private var confirmationTimeout: AnyCancellable?
@@ -94,6 +103,18 @@ class WatchStateModel: NSObject, ObservableObject {
         isConfirmationViewActive = true
         isTempTargetViewActive = false
         session.sendMessage(["tempTarget": id], replyHandler: completionHandler) { error in
+            print(error.localizedDescription)
+            DispatchQueue.main.async {
+                self.confirmation(false)
+            }
+        }
+    }
+
+    func enactProfileOverridePreset(id: String) {
+        confirmationSuccess = nil
+        isConfirmationViewActive = true
+        isProfileOverridePresetsViewActive = false
+        session.sendMessage(["profileOverridePreset": id], replyHandler: completionHandler) { error in
             print(error.localizedDescription)
             DispatchQueue.main.async {
                 self.confirmation(false)
@@ -178,6 +199,7 @@ class WatchStateModel: NSObject, ObservableObject {
         useNewCalc = state.useNewCalc ?? false
         isf = state.isf
         override = state.override
+        profileOverridePresets = state.profileOverridePresets
     }
 }
 
