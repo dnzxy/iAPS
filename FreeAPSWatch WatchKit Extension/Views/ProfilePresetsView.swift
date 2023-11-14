@@ -8,7 +8,7 @@ struct ProfilePresetsView: View {
             if state.profileOverridePresets.isEmpty {
                 Text("Set profile presets on iPhone first").padding()
             } else {
-                ForEach(state.profileOverridePresets) { preset in
+                ForEach(state.profileOverridePresets.filter({ $0.id != "" })) { preset in
                     Button {
                         WKInterfaceDevice.current().play(.click)
                         state.enactProfileOverridePreset(id: preset.id)
@@ -20,9 +20,9 @@ struct ProfilePresetsView: View {
 
             Button {
                 WKInterfaceDevice.current().play(.click)
-                state.enactTempTarget(id: "cancel")
+                state.enactProfileOverridePreset(id: "cancel")
             } label: {
-                Text("Cancel Profile Override")
+                Text("Cancel Profile")
             }
         }
         .navigationTitle("Profiles")
@@ -36,55 +36,56 @@ struct ProfilePresetsView: View {
     }
 
     @ViewBuilder private func profileOverridePresetView(_ preset: ProfileOverrideWatchPreset) -> some View {
-//                let target = state.units == .mmolL ? (((preset.target ?? 0) as NSDecimalNumber) as Decimal)
-//                    .asMmolL : (preset.target ?? 0) as Decimal
-        let duration = (preset.duration ?? 0) as Decimal
         let percent = (preset.percentage ?? 100) / 100
-        let perpetual = preset.indefinite ?? false
-        let durationString = perpetual ? "" : "\(formatter.string(from: duration as NSNumber)!)"
-        let scheduledSMBstring = (preset.smbIsOff ?? false && preset.smbIsAlwaysOff ?? false) ? "Scheduled SMBs" : ""
-        let smbString = (preset.smbIsOff ?? false && scheduledSMBstring == "") ? "SMBs are off" : ""
-//                let targetString = target != 0 ? "\(glucoseFormatter.string(from: target as NSNumber)!)" : ""
-        let maxMinutesSMB = (preset.smbMinutes as Decimal?) != nil ? (preset.smbMinutes ?? 0) as Decimal : 0
-        let maxMinutesUAM = (preset.uamMinutes as Decimal?) != nil ? (preset.uamMinutes ?? 0) as Decimal : 0
-        let isfString = preset.isf ?? false ? "ISF" : ""
-        let crString = preset.cr ?? false ? "CR" : ""
-        let dash = crString != "" ? "/" : ""
-        let isfAndCRstring = isfString + dash + crString
+        if preset.id != "" && preset.name != "" {
+            VStack {
+                Text(preset.name)
+                    .font(.headline)
+                Spacer()
+                VStack(alignment: .leading, spacing: 2) {
+                    if let targetFormatted = preset.targetFormatted, targetFormatted != "" {
+                        Text(targetFormatted)
+                    }
 
-        if preset.name != "" {
-            HStack {
-                VStack {
-                    HStack {
-                        Text(preset.name)
-                        Spacer()
+                    Text(
+                        "\(percent.formatted(.percent.grouping(.never).rounded().precision(.fractionLength(0)))), \(preset.duration?.formatted() ?? "")min"
+                    )
+
+                    if preset.smbIsOff ?? false && preset.smbIsAlwaysOff ?? false {
+                        Text("Scheduled SMBs")
                     }
-                    HStack(spacing: 5) {
-                        Text(percent.formatted(.percent.grouping(.never).rounded().precision(.fractionLength(0))))
-//                                if targetString != "" {
-//                                    Text(targetString)
-//                                    Text(targetString != "" ? state.units.rawValue : "")
-//                                }
-                        if durationString != "" { Text(durationString + (perpetual ? "" : "min")) }
-                        if smbString != "" { Text(smbString).foregroundColor(.secondary).font(.caption) }
-                        if scheduledSMBstring != "" { Text(scheduledSMBstring) }
-                        if preset.advancedSettings ?? false {
-                            Text(maxMinutesSMB == 0 ? "" : maxMinutesSMB.formatted() + " SMB")
-                            Text(maxMinutesUAM == 0 ? "" : maxMinutesUAM.formatted() + " UAM")
-                            Text(isfAndCRstring)
+
+                    if preset.smbIsOff ?? false && !(preset.smbIsAlwaysOff ?? false) {
+                        Text("SMBs are off")
+                    }
+
+                    if preset.advancedSettings ?? false {
+                        if let smbMinutes = preset.smbMinutes, let uamMinutes = preset.uamMinutes,
+                           smbMinutes > 0 || uamMinutes > 0
+                        {
+                            if smbMinutes > 0 && uamMinutes > 0 {
+                                Text("\(smbMinutes.formatted()) SMB, \(uamMinutes.formatted()) UAM")
+                            } else if smbMinutes > 0 {
+                                Text("\(smbMinutes.formatted()) SMB")
+                            } else if uamMinutes > 0 {
+                                Text("\(uamMinutes.formatted()) UAM")
+                            }
                         }
-                        Spacer()
+
+                        if preset.isf ?? false && preset.cr ?? false {
+                            Text("ISF/CR")
+                        } else if preset.isf ?? false {
+                            Text("ISF")
+                        } else if preset.cr ?? false {
+                            Text("CR")
+                        }
                     }
-                    .padding(.top, 2)
-                    .foregroundColor(.secondary)
-                    .font(.caption)
                 }
-//                        .contentShape(Rectangle())
-//                        .onTapGesture {
-//                            state.selectProfile(id_: preset.id ?? "")
-//                            state.hideModal()
-//                        }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundColor(.secondary)
+                .font(.caption)
             }
+            .padding()
         }
     }
 }
@@ -102,6 +103,7 @@ struct ProfilePresetsView_Previews: PreviewProvider {
                 end: nil,
                 percentage: 100,
                 target: 100,
+                targetFormatted: "5.5 mmol/L",
                 smbMinutes: 90,
                 uamMinutes: 90,
                 advancedSettings: false,

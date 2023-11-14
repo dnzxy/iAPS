@@ -44,6 +44,7 @@ struct ProfileOverrideWatchPreset: Codable, Identifiable {
     let end: Decimal?
     let percentage: Double?
     let target: Decimal?
+    let targetFormatted: String?
     let smbMinutes: Decimal?
     let uamMinutes: Decimal?
     let advancedSettings: Bool?

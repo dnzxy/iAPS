@@ -1,3 +1,4 @@
+import CoreData
 import Foundation
 import Swinject
 import WatchConnectivity
@@ -18,6 +19,8 @@ final class BaseWatchManager: NSObject, WatchManager, Injectable {
     @Injected() private var garmin: GarminManager!
 
     let coreDataStorage = CoreDataStorage()
+
+    let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
 
     private var lifetime = Lifetime()
 
@@ -115,7 +118,19 @@ final class BaseWatchManager: NSObject, WatchManager, Injectable {
 
             self.state.profileOverridePresets = self.coreDataStorage.fetchProfileOverridePresets()
                 .map { preset in
-                    ProfileOverrideWatchPreset(
+                    var targetFormatted = ""
+                    let units = self.settingsManager.settings.units
+
+                    if let target = preset.target, target.intValue > 0 {
+                        targetFormatted = self.glucoseFormatter
+                            .string(from: Double(
+                                truncating: units == .mmolL ? target.decimalValue * 0.0555 as NSDecimalNumber : target
+                            ) as NSNumber)!
+
+                        targetFormatted += " \(units.rawValue)"
+                    }
+
+                    return ProfileOverrideWatchPreset(
                         id: preset.id ?? "",
                         name: preset.name ?? "",
                         date: preset.date ?? Date(),
@@ -124,6 +139,7 @@ final class BaseWatchManager: NSObject, WatchManager, Injectable {
                         end: preset.end as Decimal?,
                         percentage: preset.percentage,
                         target: preset.target as Decimal?,
+                        targetFormatted: targetFormatted != "" ? targetFormatted : "",
                         smbMinutes: preset.smbMinutes as Decimal?,
                         uamMinutes: preset.uamMinutes as Decimal?,
                         advancedSettings: preset.advancedSettings,
@@ -402,9 +418,61 @@ extension BaseWatchManager: WCSessionDelegate {
         }
 
         if let profileOverridePresetId = message["profileOverridePreset"] as? String {
-            print("We're here now! Profile Preset Id: \(profileOverridePresetId)")
+            guard profileOverridePresetId != "" else { return }
+            
+            if profileOverridePresetId != "cancel" {
+                coredataContext.performAndWait {
+                    var profileArray = [OverridePresets]()
+                    let requestProfiles = OverridePresets.fetchRequest() as NSFetchRequest<OverridePresets>
+                    try? profileArray = coredataContext.fetch(requestProfiles)
 
-            // TODO: implement profile enactment (port over from iPhone)
+                    guard let profile = profileArray.filter({ $0.id == profileOverridePresetId }).first else { return }
+
+                    let saveOverride = Override(context: self.coredataContext)
+                    saveOverride.duration = (profile.duration ?? 0) as NSDecimalNumber
+                    saveOverride.indefinite = profile.indefinite
+                    saveOverride.percentage = profile.percentage
+                    saveOverride.enabled = true
+                    saveOverride.smbIsOff = profile.smbIsOff
+                    saveOverride.isPreset = true
+                    saveOverride.date = Date()
+                    saveOverride.target = profile.target
+                    saveOverride.id = profileOverridePresetId
+
+                    if profile.advancedSettings {
+                        saveOverride.advancedSettings = true
+                        if !profile.isfAndCr {
+                            saveOverride.isfAndCr = false
+                            saveOverride.isf = profile.isf
+                            saveOverride.cr = profile.cr
+                        } else { saveOverride.isfAndCr = true }
+                        if profile.smbIsAlwaysOff {
+                            saveOverride.smbIsAlwaysOff = true
+                            saveOverride.start = profile.start
+                            saveOverride.end = profile.end
+                        } else { saveOverride.smbIsAlwaysOff = false }
+
+                        saveOverride.smbMinutes = (profile.smbMinutes ?? 0) as NSDecimalNumber
+                        saveOverride.uamMinutes = (profile.uamMinutes ?? 0) as NSDecimalNumber
+                    }
+                    try? self.coredataContext.save()
+
+                    replyHandler(["confirmation": true])
+                    return
+                }
+            } else {
+                // message == cancel
+                
+                coredataContext.perform { [self] in
+                    let profiles = Override(context: self.coredataContext)
+                    profiles.enabled = false
+                    profiles.date = Date()
+                    try? self.coredataContext.save()
+                }
+
+                replyHandler(["confirmation": true])
+                return
+            }
 
 //            if var preset = tempTargetsStorage.presets().first(where: { $0.id == profileOverridePresetId }) {
 //                preset.createdAt = Date()
