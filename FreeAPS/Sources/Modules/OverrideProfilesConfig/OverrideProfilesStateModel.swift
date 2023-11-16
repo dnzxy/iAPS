@@ -12,6 +12,7 @@ extension OverrideProfilesConfig {
         @Published var smbIsOff: Bool = false
         @Published var id: String = ""
         @Published var profileName: String = ""
+        @Published var profileEmoji: String = ""
         @Published var isPreset: Bool = false
         @Published var presets: [OverridePresets] = []
         @Published var selection: OverridePresets?

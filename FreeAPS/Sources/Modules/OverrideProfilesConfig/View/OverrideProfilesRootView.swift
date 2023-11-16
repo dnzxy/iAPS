@@ -41,9 +41,15 @@ extension OverrideProfilesConfig {
             return formatter
         }
 
+        //
+        //        private func filterEmoji(_ text: String) -> String {
+        //            text.filter { $0.isEmoji }
+        //        }
+
         var presetPopover: some View {
             Form {
                 Section {
+                    EmojiTextField(text: $state.profileEmoji, placeholder: "Emoji")
                     TextField("Name Of Profile", text: $state.profileName)
                 } header: { Text("Enter Name of Profile") }
 
@@ -348,6 +354,65 @@ extension OverrideProfilesConfig {
                 try moc.save()
             } catch {
                 // To do: add error
+            }
+        }
+    }
+}
+
+class UIEmojiTextField: UITextField {
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+
+    func setEmoji() {
+        _ = textInputMode
+    }
+
+    override var textInputContextIdentifier: String? {
+        ""
+    }
+
+    override var textInputMode: UITextInputMode? {
+        for mode in UITextInputMode.activeInputModes {
+            if mode.primaryLanguage == "emoji" {
+                keyboardType = .default // do not remove this
+                return mode
+            }
+        }
+        return nil
+    }
+}
+
+struct EmojiTextField: UIViewRepresentable {
+    @Binding var text: String
+    var placeholder: String = ""
+
+    func makeUIView(context: Context) -> UIEmojiTextField {
+        let emojiTextField = UIEmojiTextField()
+        emojiTextField.placeholder = placeholder
+        emojiTextField.text = text
+        emojiTextField.delegate = context.coordinator
+        return emojiTextField
+    }
+
+    func updateUIView(_ uiView: UIEmojiTextField, context _: Context) {
+        uiView.text = text
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: EmojiTextField
+
+        init(parent: EmojiTextField) {
+            self.parent = parent
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            DispatchQueue.main.async { [weak self] in
+                self?.parent.text = textField.text ?? ""
             }
         }
     }
