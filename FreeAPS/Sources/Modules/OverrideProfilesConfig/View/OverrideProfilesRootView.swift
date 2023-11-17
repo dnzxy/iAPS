@@ -41,11 +41,6 @@ extension OverrideProfilesConfig {
             return formatter
         }
 
-        //
-        //        private func filterEmoji(_ text: String) -> String {
-        //            text.filter { $0.isEmoji }
-        //        }
-
         var presetPopover: some View {
             Form {
                 Section {
@@ -58,7 +53,10 @@ extension OverrideProfilesConfig {
                         state.savePreset()
                         isSheetPresented = false
                     }
-                    .disabled(state.profileName.isEmpty || fetchedProfiles.filter({ $0.name == state.profileName }).isNotEmpty)
+                    .disabled(
+                        state.profileEmoji.isEmpty || state.profileName.isEmpty || fetchedProfiles
+                            .filter({ $0.name == state.profileName && $0.emoji == state.profileEmoji }).isNotEmpty
+                    )
 
                     Button("Cancel") {
                         isSheetPresented = false
@@ -285,6 +283,7 @@ extension OverrideProfilesConfig {
                 .asMmolL : (preset.target ?? 0) as Decimal
             let duration = (preset.duration ?? 0) as Decimal
             let name = ((preset.name ?? "") == "") || (preset.name?.isEmpty ?? true) ? "" : preset.name!
+            let emoji = ((preset.emoji ?? "") == "") || (preset.emoji?.isEmpty ?? true) ? "" : preset.emoji!
             let percent = preset.percentage / 100
             let perpetual = preset.indefinite
             let durationString = perpetual ? "" : "\(formatter.string(from: duration as NSNumber)!)"
@@ -300,31 +299,54 @@ extension OverrideProfilesConfig {
 
             if name != "" {
                 HStack {
-                    VStack {
+                    Text(emoji).font(.title)
+
+                    VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text(name)
-                            Spacer()
                         }
-                        HStack(spacing: 5) {
+
+                        HStack {
                             Text(percent.formatted(.percent.grouping(.never).rounded().precision(.fractionLength(0))))
+
                             if targetString != "" {
-                                Text(targetString)
-                                Text(targetString != "" ? state.units.rawValue : "")
+                                Text(targetString + state.units.rawValue)
                             }
-                            if durationString != "" { Text(durationString + (perpetual ? "" : "min")) }
-                            if smbString != "" { Text(smbString).foregroundColor(.secondary).font(.caption) }
-                            if scheduledSMBstring != "" { Text(scheduledSMBstring) }
+
+                            if durationString != "" {
+                                Text(durationString + (perpetual ? "" : "min"))
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+
+                        HStack {
+                            if smbString != "" {
+                                Text(smbString).foregroundColor(.secondary).font(.caption)
+                            }
+
+                            if scheduledSMBstring != "" {
+                                Text(scheduledSMBstring)
+                            }
+
                             if preset.advancedSettings {
-                                Text(maxMinutesSMB == 0 ? "" : maxMinutesSMB.formatted() + " SMB")
-                                Text(maxMinutesUAM == 0 ? "" : maxMinutesUAM.formatted() + " UAM")
+                                if maxMinutesSMB > 0 {
+                                    Text(maxMinutesSMB.formatted() + " SMB")
+                                }
+
+                                if maxMinutesUAM > 0 {
+                                    Text(maxMinutesUAM.formatted() + " UAM")
+                                }
+
                                 Text(isfAndCRstring)
                             }
-                            Spacer()
                         }
-                        .padding(.top, 2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.secondary)
                         .font(.caption)
                     }
+                    .padding(.leading)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         state.selectProfile(id_: preset.id ?? "")

@@ -419,7 +419,7 @@ extension BaseWatchManager: WCSessionDelegate {
 
         if let profileOverridePresetId = message["profileOverridePreset"] as? String {
             guard profileOverridePresetId != "" else { return }
-            
+
             if profileOverridePresetId != "cancel" {
                 coredataContext.performAndWait {
                     var profileArray = [OverridePresets]()
@@ -462,7 +462,7 @@ extension BaseWatchManager: WCSessionDelegate {
                 }
             } else {
                 // message == cancel
-                
+
                 coredataContext.perform { [self] in
                     let profiles = Override(context: self.coredataContext)
                     profiles.enabled = false

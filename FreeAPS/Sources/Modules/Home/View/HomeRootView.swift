@@ -411,44 +411,44 @@ extension Home {
             .modal(for: .dataTable, from: self)
         }
 
-        @ViewBuilder private func profiles(_: GeometryProxy) -> some View {
-            let colour: Color = colorScheme == .dark ? .black : .white
-            // Rectangle().fill(colour).frame(maxHeight: 1)
-            ZStack {
-                Rectangle().fill(Color.gray.opacity(0.3)).frame(maxHeight: 40)
-                let cancel = fetchedPercent.first?.enabled ?? false
-                HStack(spacing: cancel ? 25 : 15) {
-                    Text(selectedProfile().name).foregroundColor(.secondary)
-                    if cancel, selectedProfile().isOn {
-                        Button { showCancelAlert.toggle() }
-                        label: {
-                            Image(systemName: "xmark")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Button { state.showModal(for: .overrideProfilesConfig) }
-                    label: {
-                        Image(systemName: "person.3.sequence.fill")
-                            .symbolRenderingMode(.palette)
-                            .foregroundStyle(
-                                !(fetchedPercent.first?.enabled ?? false) ? .green : .cyan,
-                                !(fetchedPercent.first?.enabled ?? false) ? .cyan : .green,
-                                .purple
-                            )
-                    }
-                }
-            }
-            .alert(
-                "Return to Normal?", isPresented: $showCancelAlert,
-                actions: {
-                    Button("No", role: .cancel) {}
-                    Button("Yes", role: .destructive) {
-                        state.cancelProfile()
-                    }
-                }, message: { Text("This will change settings back to your normal profile.") }
-            )
-            Rectangle().fill(colour).frame(maxHeight: 1)
-        }
+//        @ViewBuilder private func profiles(_: GeometryProxy) -> some View {
+//            let colour: Color = colorScheme == .dark ? .black : .white
+//            // Rectangle().fill(colour).frame(maxHeight: 1)
+//            ZStack {
+//                Rectangle().fill(Color.gray.opacity(0.3)).frame(maxHeight: 40)
+//                let cancel = fetchedPercent.first?.enabled ?? false
+//                HStack(spacing: cancel ? 25 : 15) {
+//                    Text(selectedProfile().name).foregroundColor(.secondary)
+//                    if cancel, selectedProfile().isOn {
+//                        Button { showCancelAlert.toggle() }
+//                        label: {
+//                            Image(systemName: "xmark")
+//                                .foregroundStyle(.secondary)
+//                        }
+//                    }
+//                    Button { state.showModal(for: .overrideProfilesConfig) }
+//                    label: {
+//                        Image(systemName: "person.3.sequence.fill")
+//                            .symbolRenderingMode(.palette)
+//                            .foregroundStyle(
+//                                !(fetchedPercent.first?.enabled ?? false) ? .green : .cyan,
+//                                !(fetchedPercent.first?.enabled ?? false) ? .cyan : .green,
+//                                .purple
+//                            )
+//                    }
+//                }
+//            }
+//            .alert(
+//                "Return to Normal?", isPresented: $showCancelAlert,
+//                actions: {
+//                    Button("No", role: .cancel) {}
+//                    Button("Yes", role: .destructive) {
+//                        state.cancelProfile()
+//                    }
+//                }, message: { Text("This will change settings back to your normal profile.") }
+//            )
+//            Rectangle().fill(colour).frame(maxHeight: 1)
+//        }
 
         private func selectedProfile() -> (name: String, isOn: Bool) {
             var profileString = ""
@@ -499,7 +499,9 @@ extension Home {
                             }
                         }
                     }.buttonStyle(.borderless)
+
                     Spacer()
+
                     Button { state.showModal(for: .addTempTarget) }
                     label: {
                         Image("target")
@@ -510,7 +512,9 @@ extension Home {
                     }
                     .foregroundColor(.loopGreen)
                     .buttonStyle(.borderless)
+
                     Spacer()
+
                     Button {
                         state.showModal(for: .bolus(
                             waitForSuggestion: true,
@@ -527,6 +531,21 @@ extension Home {
                     .foregroundColor(.insulin)
                     .buttonStyle(.borderless)
                     Spacer()
+
+                    Button {
+                        state.showModal(for: .overrideProfilesConfig)
+                    }
+                    label: {
+                        Image(systemName: "person")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .padding(8)
+                    }
+                    .foregroundColor(.cyan)
+                    .buttonStyle(.borderless)
+                    Spacer()
+
                     if state.allowManualTemp {
                         Button { state.showModal(for: .manualTempBasal) }
                         label: {
@@ -540,6 +559,7 @@ extension Home {
                         .buttonStyle(.borderless)
                         Spacer()
                     }
+
                     Button { state.showModal(for: .statistics)
                     }
                     label: {
@@ -551,7 +571,9 @@ extension Home {
                     }
                     .foregroundColor(.purple)
                     .buttonStyle(.borderless)
+
                     Spacer()
+
                     Button { state.showModal(for: .settings) }
                     label: {
                         Image("settings1")
@@ -575,7 +597,7 @@ extension Home {
                     infoPanel
                     mainChart
                     legendPanel
-                    profiles(geo)
+//                    profiles(geo)
                     bottomPanel(geo)
                 }
                 .edgesIgnoringSafeArea(.vertical)

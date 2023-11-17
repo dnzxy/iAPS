@@ -88,6 +88,7 @@ extension OverrideProfilesConfig {
                 saveOverride.percentage = self.percentage
                 saveOverride.smbIsOff = self.smbIsOff
                 saveOverride.name = self.profileName
+                saveOverride.emoji = self.profileEmoji
                 id = UUID().uuidString
                 self.isPreset.toggle()
                 saveOverride.id = id
